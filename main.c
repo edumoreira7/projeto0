@@ -4,6 +4,10 @@
 int main(){
   int pos = 0;
   Tarefa tarefas[TOTAL];
+
+  int e = carregarTarefas(tarefas, TOTAL, &pos);
+  if(e != 0)
+    pos = 0;
   
   int opcao;
   do{
@@ -24,6 +28,7 @@ int main(){
       int erro = listarTarefas(tarefas, pos);
     }else if (opcao == 0){
       printf("Sair\n");
+      salvarTarefas(tarefas, TOTAL, pos);
     }
     else{
       printf("Opção inválida\n");
