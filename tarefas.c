@@ -2,9 +2,9 @@
 #include <stdio.h>
 #include <string.h>
 
-int criarTarefa(Tarefa tarefas[], int *pos){
+Erro criarTarefa(Tarefa tarefas[], int *pos){
   if(*pos >= TOTAL)
-    return 1;
+    return MAX_TAREFAS;
 
   printf("Entre com a prioridade: ");
   scanf("%d", &tarefas[*pos].prioridade);
@@ -19,12 +19,12 @@ int criarTarefa(Tarefa tarefas[], int *pos){
 
   *pos = *pos + 1;
   
-  return 0;
+  return OK;
 }
 
-int deletarTarefa(Tarefa tarefas[], int *pos){
+Erro deletarTarefa(Tarefa tarefas[], int *pos){
   if(*pos == 0)
-    return 1;
+    return SEM_TAREFAS;
 
   int pos_d;
   printf("Entre com a posição da tarefa: ");
@@ -32,22 +32,23 @@ int deletarTarefa(Tarefa tarefas[], int *pos){
   pos_d--;
 
   if(pos_d >= *pos)
-    return 2;
+    return NAO_EXISTE;
 
   for(int i=pos_d; i<*pos; i++){
     tarefas[i].prioridade = tarefas[i + 1].prioridade;
     strcpy(tarefas[i].categoria, tarefas[i + 1].categoria);
     strcpy(tarefas[i].descricao, tarefas[i + 1].descricao);
 
-    *pos = *pos - 1;
   }
+
+  *pos = *pos - 1;
   
-  return 0;
+  return OK;
 }
 
-int listarTarefas(Tarefa tarefas[], int pos){
+Erro listarTarefas(Tarefa tarefas[], int pos){
   if(pos == 0)
-    return 1;
+    return SEM_TAREFAS;
 
   for(int i=0; i<pos; i++){
     printf("Pos: %d\t", i+1);
@@ -56,47 +57,47 @@ int listarTarefas(Tarefa tarefas[], int pos){
     printf("Descricao: %s\n", tarefas[i].descricao);
   }
   
-  return 0;
+  return OK;
 }
 
-int salvarTarefas(Tarefa tarefas[], int total, int pos){
+Erro salvarTarefas(Tarefa tarefas[], int total, int pos){
   FILE *f = fopen("tarefas", "wb");
   if(f == NULL)
-    return 1;
+    return ABRIR;
 
   int e = fwrite(tarefas, total, sizeof(Tarefa), f);
     if(e<=0)
-      return 2;
+      return ESCREVER;
 
   e = fwrite(&pos, 1, sizeof(int), f);
   if(e<=0)
-    return 2;
+    return ESCREVER;
   
   e = fclose(f);
   if(e!=0)
-    return 3;
+    return FECHAR;
   
-  return 0;
+  return OK;
 }
 
-int carregarTarefas(Tarefa tarefas[], int total, int *pos){
+Erro carregarTarefas(Tarefa tarefas[], int total, int *pos){
   FILE *f = fopen("tarefas", "rb");
   if(f == NULL)
-    return 1;
+    return ABRIR;
 
   int e = fread(tarefas, total, sizeof(Tarefa), f);
   if(e<=0)
-    return 2;
+    return LER;
 
   e = fread(pos, 1, sizeof(int), f);
   if(e<=0)
-    return 2;
+    return LER;
 
   e = fclose(f);
   if(e!=0)
-    return 3;
+    return FECHAR;
   
-  return 0;
+  return OK;
 }
 
 void clearBuffer(){
